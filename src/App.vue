@@ -14,7 +14,7 @@ const themeConfig = computed(() => ({
 
   // 3. 可选：自定义全局主色
   token: {
-    colorPrimary: '#1677ff',
+    colorPrimary: '#21AA54',
   },
 }))
 </script>
@@ -27,4 +27,16 @@ const themeConfig = computed(() => ({
   </a-config-provider>
 </template>
 
-<style scoped></style>
+<style scoped>
+html,
+body,
+#app {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+.ant-layout {
+  min-height: 100vh;
+}
+</style>

@@ -1,6 +1,6 @@
 /* color palette from <https://github.com/vuejs/theme> */
 :root {
-  --c-bg: #f5f7fa; /* 页面背景 */
+  --c-bg: #fff; /* 页面背景 */
   --c-text: #303133; /* 主文字 */
   --c-sub: #606266; /* 次级文字 */
   --c-primary: #409eff; /* 主色 */
@@ -11,8 +11,8 @@
 
 /* 2. 暗黑覆写集 */
 html[data-theme='dark'] {
-  --c-bg: #0f0f0f;
-  --c-card: #1d1e20;
+  --c-bg: #1c1c1c;
+  --c-card: #141414;
   --c-text: #e1e3e8;
   --c-sub: #a3a6ad;
   --c-primary: #337ecc;

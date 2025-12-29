@@ -1,83 +1,160 @@
 <template>
-  <!-- <div id="Login">
-
-  </div> -->
-  <div class="login-container" :class="{ dark: isDark }">
-    <header class="w-screen flex justify-end h-8 items-center p-6 absolute top-2">
-      <ThemeChange></ThemeChange>
+  <div
+    :class="['login-container', isDark ? 'dark bg-[#0a0a0a]' : 'bg-[#f0f2f5]']"
+    class="relative w-full h-screen flex justify-center items-center overflow-hidden transition-colors duration-500"
+  >
+    <header class="fixed top-0 w-full flex justify-end p-6 z-50">
+      <ThemeChange />
     </header>
-    <div class="bg-glow-1"></div>
-    <div class="bg-glow-2"></div>
-    <div class="bg-glow-3"></div>
 
-    <div class="login-card">
-      <div class="login-header">
-        <h2>清风后台管理系统</h2>
-        <p>欢迎回来，请登录您的账号</p>
+    <div class="bg-glow bg-glow-1"></div>
+    <div class="bg-glow bg-glow-2"></div>
+    <div v-show="isDark" class="bg-glow bg-glow-3"></div>
+
+    <div
+      class="login-card w-[520px] max-sm:w-[90%] p-10 z-10 rounded-[24px] backdrop-blur-[20px] transition-all duration-500 border border-white/30 dark:border-white/10 shadow-2xl bg-white/70 dark:bg-white/5"
+    >
+      <div class="text-center mb-8">
+        <h2
+          class="text-[28px] font-bold mb-2 transition-colors"
+          :style="{ color: 'var(--text-color)' }"
+        >
+          <!-- 清风后台管理系统 -->
+        </h2>
+        <p class="text-sm text-gray-500 dark:text-gray-400">欢迎回来，请登录您的账号</p>
       </div>
 
-      <div
-        style="
-          height: 200px;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          color: var(--text-color);
-        "
-      >
-        这里放置你的 Ant Design 表单
-      </div>
+      <a-form :model="loginForm" :rules="rules" layout="vertical" class="custom-form" ref="formRef">
+        <a-form-item label="账号" name="username" required>
+          <a-input v-model:value="loginForm.username" placeholder="请输入账号" size="large">
+            <template #prefix><Icon icon="material-symbols:account-circle-outline" /></template>
+          </a-input>
+        </a-form-item>
+
+        <a-form-item label="密码" name="password" required>
+          <a-input-password
+            v-model:value="loginForm.password"
+            placeholder="请输入密码"
+            size="large"
+          >
+            <template #prefix><Icon icon="material-symbols:lock-outline" /></template>
+          </a-input-password>
+        </a-form-item>
+
+        <a-form-item label="验证码" name="captcha" required>
+          <div class="flex gap-3">
+            <a-input
+              v-model:value="loginForm.captcha"
+              placeholder="请输入"
+              size="large"
+              class="flex-1"
+            >
+              <template #prefix><Icon icon="material-symbols:shield-lock-outline" /></template>
+            </a-input>
+            <div
+              class="captcha-img"
+              v-html="loginForm.captchaSvg"
+              @click="refreshCaptcha"
+              title="点击刷新"
+            ></div>
+          </div>
+        </a-form-item>
+
+        <a-button
+          :loading="isLoading"
+          type="primary"
+          block
+          size="large"
+          class="submit-btn mt-4"
+          @click="handleLogin"
+        >
+          进入系统
+        </a-button>
+      </a-form>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
 import ThemeChange from '@/components/ThemeChange.vue'
-import { ref } from 'vue'
+import { reactive, ref, useTemplateRef } from 'vue'
 import { storeToRefs } from 'pinia'
 import { useTheme } from '@/stores/theme'
+import { message } from 'ant-design-vue'
+import { Icon } from '@iconify/vue'
+import { getCaptchaApi, loginApi } from '@/api/user'
+import { useRouter } from 'vue-router'
+const router = useRouter()
+// import type { UserInfo } from './types'
+import { useUserStore } from '@/stores/user'
+const userStore = useUserStore()
 const { dark: isDark } = storeToRefs(useTheme())
+const loginForm = reactive({
+  username: 'admin',
+  password: '123456',
+  captcha: '',
+  captchaSvg: '',
+  captchaKey: '',
+})
+const isLoading = ref(false)
+const formRef = useTemplateRef('formRef')
+// 定义校验规则
+const rules = {
+  username: [{ required: true, message: '请输入账号', trigger: 'blur' }],
+  password: [{ required: true, message: '请输入密码', trigger: 'blur' }],
+  captcha: [{ required: true, message: '请输入验证码', trigger: 'blur' }],
+}
+
+const handleLogin = async () => {
+  await formRef.value.validate()
+  isLoading.value = true
+  try {
+    const res = await loginApi(loginForm)
+    message.success('登录成功')
+    console.log(res, 'res')
+    userStore.setAuth(res)
+    router.push('/home')
+  } catch (error) {
+    console.log(error)
+  } finally {
+    isLoading.value = false
+  }
+}
+const init = () => {
+  // 初始化逻辑
+  getCaptcha()
+}
+init()
+//获取验证码
+async function getCaptcha() {
+  const res = await getCaptchaApi()
+  loginForm.captchaKey = res.captchaKey
+  loginForm.captchaSvg = res.svg
+}
+// 刷新验证码
+function refreshCaptcha() {
+  getCaptcha()
+}
 </script>
 
 <style lang="scss" scoped>
-#Login {
-  width: 100vw;
-  height: 100vh;
-  font-size: large;
-}
+/* 1. 变量定义 */
 .login-container {
-  position: relative;
-  width: 100%;
-  height: 100vh;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  overflow: hidden;
-  /* 默认明亮背景色 */
-  background-color: #f0f2f5;
-  transition: background-color 0.5s ease;
   --text-color: #333;
+  &.dark {
+    --text-color: #fff;
+  }
 }
 
-/* 暗黑模式适配 */
-.login-container.dark {
-  background-color: #0a0a0a;
-  --text-color: #fff;
-}
-
-/* --- 背景动画色块 --- */
-.bg-glow-1,
-.bg-glow-2,
-.bg-glow-3 {
+/* 2. 背景球通用样式与动画 */
+.bg-glow {
   position: absolute;
   border-radius: 50%;
   filter: blur(80px);
-  z-index: 1;
   opacity: 0.6;
   animation: move 20s infinite alternate;
 }
 
-/* 球1：蓝色系 */
 .bg-glow-1 {
   width: 400px;
   height: 400px;
@@ -86,7 +163,6 @@ const { dark: isDark } = storeToRefs(useTheme())
   left: -100px;
 }
 
-/* 球2：青色系 */
 .bg-glow-2 {
   width: 500px;
   height: 500px;
@@ -97,81 +173,77 @@ const { dark: isDark } = storeToRefs(useTheme())
   animation-delay: -5s;
 }
 
-/* 球3：暗黑模式下的点缀 */
 .bg-glow-3 {
   width: 300px;
   height: 300px;
   background: rgba(99, 102, 241, 0.3);
   top: 40%;
   right: 20%;
-  display: none;
 }
 
-.dark .bg-glow-3 {
-  display: block;
-}
-
-/* --- 登录卡片 (毛玻璃效果) --- */
-.login-card {
-  position: relative;
-  z-index: 10;
-  width: 520px;
-  padding: 40px;
-  background: rgba(255, 255, 255, 0.7); /* 明亮模式半透明 */
-  backdrop-filter: blur(20px); /* 核心：毛玻璃模糊 */
-  -webkit-backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 255, 255, 0.3);
-  border-radius: 24px;
-  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.1);
-  transition: all 0.5s ease;
-}
-
-.dark .login-card {
-  background: rgba(255, 255, 255, 0.05); /* 暗黑模式超薄透明 */
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
-}
-
-.login-header h2 {
-  font-size: 28px;
-  font-weight: 700;
-  text-align: center;
-  color: var(--text-color);
-  margin-bottom: 8px;
-}
-
-.login-header p {
-  font-size: 14px;
-  text-align: center;
-  color: #666;
-  margin-bottom: 32px;
-}
-
-.dark .login-header p {
-  color: #aaa;
-}
-
-/* --- 浮动动画 --- */
 @keyframes move {
-  0% {
+  from {
     transform: translate(0, 0) scale(1);
   }
-  33% {
+  to {
     transform: translate(100px, 50px) scale(1.1);
   }
-  66% {
-    transform: translate(-50px, 100px) scale(0.9);
+}
+
+/* 3. Ant Design 组件深度样式优化 */
+:deep(.ant-input-affix-wrapper) {
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.4) !important;
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  /* 关键：强制修改内部原生 input 的背景，防止色差 */
+  input.ant-input {
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    /* 这里的文字颜色也可以顺便统一 */
+    color: inherit;
   }
-  100% {
-    transform: translate(0, 0) scale(1);
+  .dark & {
+    background: rgba(0, 0, 0, 0.2) !important;
+    border-color: rgba(255, 255, 255, 0.1);
+  }
+}
+/* 暗黑模式适配 */
+.dark :deep(.ant-input-affix-wrapper) {
+  background-color: rgba(0, 0, 0, 0.2) !important;
+  border-color: rgba(255, 255, 255, 0.1);
+
+  input.ant-input {
+    background: transparent !important;
+    color: #fff;
+  }
+}
+.captcha-btn {
+  border-radius: 12px !important;
+  min-width: 110px;
+  color: #6366f1;
+  border-color: rgba(99, 102, 241, 0.5);
+  .dark & {
+    color: #818cf8;
+    border-color: rgba(129, 140, 248, 0.5);
+    background: transparent;
   }
 }
 
-/* 针对移动端的适配 */
-@media (max-width: 480px) {
-  .login-card {
-    width: 90%;
-    padding: 24px;
+.submit-btn {
+  height: 50px !important;
+  border-radius: 12px !important;
+  font-weight: 600 !important;
+  background: linear-gradient(135deg, #6366f1, #a855f7) !important;
+  border: none !important;
+  box-shadow: 0 10px 20px -5px rgba(99, 102, 241, 0.4) !important;
+  &:hover {
+    transform: translateY(-1px);
+    opacity: 0.9;
   }
+}
+
+:deep(.ant-form-item-label > label) {
+  color: var(--text-color) !important;
 }
 </style>
