@@ -24,6 +24,7 @@ export default defineConfigWithVueTs(
     name: 'disable/multi-word',
     rules: {
       'vue/multi-word-component-names': 'off', // ✅ 关掉 multi-word 组件名检查
+      '@typescript-eslint/no-explicit-any': 'off',
     },
   },
 )

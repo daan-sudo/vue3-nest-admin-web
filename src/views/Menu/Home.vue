@@ -1,5 +1,7 @@
 <template>
-  <div>我是home页面</div>
+  <div>
+    <a-card> v方法v </a-card>
+  </div>
 </template>
 
 <script setup lang="ts">

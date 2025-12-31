@@ -4,6 +4,11 @@ import { createApp } from 'vue'
 import { createPinia } from 'pinia'
 // 1. 引入所有图标
 import * as Icons from '@ant-design/icons-vue'
+import zhCN from 'ant-design-vue/es/locale/zh_CN' // 中文语言包
+import dayjs from 'dayjs'
+import 'dayjs/locale/zh-cn'
+
+dayjs.locale('zh-cn')
 // 1. 引入持久化插件
 import piniaPluginPersistedstate from 'pinia-plugin-persistedstate'
 
@@ -27,6 +32,20 @@ import {
   Avatar,
   Tabs,
   Tooltip,
+  Card,
+  Row,
+  Col,
+  Space,
+  Flex,
+  Table,
+  Popover,
+  Checkbox,
+  Divider,
+  Modal,
+  TreeSelect,
+  Radio,
+  InputNumber,
+  Tag,
 } from 'ant-design-vue'
 
 const app = createApp(App)
@@ -46,6 +65,20 @@ app.use(Dropdown)
 app.use(Avatar)
 app.use(Tabs)
 app.use(Tooltip)
+app.use(Card)
+app.use(Row)
+app.use(Col)
+app.use(Space)
+app.use(Flex)
+app.use(Table)
+app.use(Popover)
+app.use(Checkbox)
+app.use(Divider)
+app.use(Modal)
+app.use(TreeSelect)
+app.use(Radio)
+app.use(InputNumber)
+app.use(Tag)
 // app.use(LayoutSider)
 // 2. 循环注册所有图标组件
 Object.keys(Icons).forEach((key) => {
@@ -55,5 +88,5 @@ Object.keys(Icons).forEach((key) => {
 pinia.use(piniaPluginPersistedstate)
 app.use(pinia)
 app.use(router)
-
+app.provide('locale', zhCN)
 app.mount('#app')

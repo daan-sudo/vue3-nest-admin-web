@@ -24,16 +24,18 @@
             <template #title>
               <span>
                 <component :is="item.icon" />
-                <span>{{ item.title }}</span>
+                <span>{{ item.name }}</span>
               </span>
             </template>
             <a-menu-item v-for="sub in item.children" :key="sub.path">
-              {{ sub.title }}
+              <component :is="sub.icon" />
+              <span>{{ sub.name }}</span>
+              <!-- {{ sub.name }} -->
             </a-menu-item>
           </a-sub-menu>
           <a-menu-item v-else :key="item.path">
             <component :is="item.icon" />
-            <span>{{ item.title }}</span>
+            <span>{{ item.name }}</span>
           </a-menu-item>
         </template>
       </a-menu>
@@ -121,7 +123,7 @@
 
       <a-layout-content
         :class="['transition-all duration-300', isContentMax ? 'm-0 h-screen' : 'm-4']"
-        class="m-4 p-4 rounded-lg overflow-auto"
+        class="rounded-lg overflow-auto"
       >
         <router-view v-slot="{ Component, route }">
           <transition name="fade-slide" mode="out-in">
@@ -144,6 +146,7 @@ import { useUserStore } from '@/stores/user'
 import { ExclamationCircleOutlined } from '@ant-design/icons-vue'
 import { createVNode } from 'vue'
 import { Modal } from 'ant-design-vue'
+import { getMenuListApi } from '@/api/system'
 
 import {
   MenuUnfoldOutlined,
@@ -152,6 +155,7 @@ import {
   FullscreenExitOutlined,
 } from '@ant-design/icons-vue'
 import { useFullscreen } from '@vueuse/core'
+import type { Menu } from '../System/types'
 const { isFullscreen, toggle } = useFullscreen()
 const userStore = useUserStore()
 const isContentMax = ref(false)
@@ -165,19 +169,20 @@ const openKeys = ref<string[]>(['/system'])
 const activeTabPath = ref(route.path)
 const isSpin = ref(false)
 
+const menuData = ref<Menu[]>([])
 // 模拟菜单数据
-const menuData = [
-  { title: '首页', path: '/home', icon: 'MonitorOutlined' },
-  {
-    title: '系统管理',
-    path: '/system',
-    icon: 'SettingOutlined',
-    children: [
-      { title: '用户管理', path: '/system/user' },
-      { title: '菜单管理', path: '/system/menu' },
-    ],
-  },
-]
+// const menuData = [
+//   { title: '首页', path: '/home', icon: 'MonitorOutlined' },
+//   {
+//     title: '系统管理',
+//     path: '/system',
+//     icon: 'SettingOutlined',
+//     children: [
+//       { title: '用户管理', path: '/system/user' },
+//       { title: '菜单管理', path: '/system/menu' },
+//     ],
+//   },
+// ]
 
 // 监听路由变化：添加 Tab, 更新面包屑
 watch(
@@ -247,6 +252,13 @@ const logout = () => {
     class: 'test',
   })
 }
+// 获取菜单
+async function getMenuList() {
+  const res = await getMenuListApi()
+  console.log(res)
+  menuData.value = res
+}
+getMenuList()
 onMounted(() => window.addEventListener('keydown', handleEsc))
 onUnmounted(() => window.removeEventListener('keydown', handleEsc))
 </script>

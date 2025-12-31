@@ -51,34 +51,40 @@ const router = createRouter({
           meta: { title: '菜单管理', keepAlive: true }, // 必须有 title
           component: () => import('@/views/System/MenuSystem.vue'),
         },
+        {
+          path: '/system/role',
+          name: 'system-role',
+          meta: { title: '角色管理', keepAlive: true }, // 必须有 title
+          component: () => import('@/views/System/RoleSystem.vue'),
+        },
       ],
     },
   ],
 })
-router.beforeEach((to, from, next) => {
-  const userStore = useUserStore()
-  // const router = useRouter()
-  // 1. 判断是否有 Token (推荐用 Token 判断，比 userInfo 更可靠)
-  const hasToken = userStore.getAccessToken
+// router.beforeEach((to, from, next) => {
+//   const userStore = useUserStore()
+//   // const router = useRouter()
+//   // 1. 判断是否有 Token (推荐用 Token 判断，比 userInfo 更可靠)
+//   const hasToken = userStore.getAccessToken
 
-  if (hasToken) {
-    if (to.path === '/login') {
-      // 如果已登录，还想去登录页，直接拉回首页
-      next({ path: '/' })
-    } else {
-      // 已登录，正常跳转
-      next()
-    }
-  } else {
-    // 2. 未登录的情况
-    if (whiteList.includes(to.path)) {
-      // 在白名单里，直接放行
-      next()
-    } else {
-      // 不在白名单，强行拦截到登录页
-      // 可以带上 redirect 参数，方便登录后跳回原页面
-      next(`/login`)
-    }
-  }
-})
+//   if (hasToken) {
+//     if (to.path === '/login') {
+//       // 如果已登录，还想去登录页，直接拉回首页
+//       next({ path: '/' })
+//     } else {
+//       // 已登录，正常跳转
+//       next()
+//     }
+//   } else {
+//     // 2. 未登录的情况
+//     if (whiteList.includes(to.path)) {
+//       // 在白名单里，直接放行
+//       next()
+//     } else {
+//       // 不在白名单，强行拦截到登录页
+//       // 可以带上 redirect 参数，方便登录后跳回原页面
+//       next(`/login`)
+//     }
+//   }
+// })
 export default router

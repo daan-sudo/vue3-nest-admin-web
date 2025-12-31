@@ -12,7 +12,7 @@
     <div v-show="isDark" class="bg-glow bg-glow-3"></div>
 
     <div
-      class="login-card w-[520px] max-sm:w-[90%] p-10 z-10 rounded-[24px] backdrop-blur-[20px] transition-all duration-500 border border-white/30 dark:border-white/10 shadow-2xl bg-white/70 dark:bg-white/5"
+      class="login-card w-[520px] max-sm:w-[90%] p-10 z-10 rounded-[24px] backdrop-blur-[20px] transition-all duration-500 border border-white/30 dark:border-white/20 shadow-2xl bg-white/10 dark:bg-white/10"
     >
       <div class="text-center mb-8">
         <h2

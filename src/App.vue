@@ -4,7 +4,10 @@ import { RouterView } from 'vue-router'
 import { storeToRefs } from 'pinia'
 import { useTheme } from '@/stores/theme'
 import { theme } from 'ant-design-vue' // 引入 AntD 的主题配置
+import { inject } from 'vue'
+const locale = inject('locale')
 const store = useTheme()
+
 const { dark: isDark } = storeToRefs(store)
 const themeConfig = computed(() => ({
   // 1. 核心：切换算法
@@ -20,7 +23,7 @@ const themeConfig = computed(() => ({
 </script>
 
 <template>
-  <a-config-provider :theme="themeConfig">
+  <a-config-provider :theme="themeConfig" :locale="locale">
     <!-- <AppProvider> -->
     <RouterView class="bg-layout" />
     <!-- </AppProvider> -->
