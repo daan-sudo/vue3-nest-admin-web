@@ -44,7 +44,7 @@
         :data-source="tableData"
         :loading="loading"
         :pagination="pagination"
-        :show-pagination="true"
+        :show-pagination="false"
         @refresh="fetchData"
       >
         <template #extra>
@@ -69,8 +69,16 @@
           </template>
           <template v-if="column.dataIndex === 'action'">
             <a-space>
-              <a-button danger>删除</a-button>
-              <a-button type="primary">编辑</a-button>
+              <a-popconfirm
+                title="确定删除吗?"
+                ok-text="确定"
+                cancel-text="取消"
+                @confirm="handleDelete(record.id)"
+              >
+                <a-button danger>删除</a-button>
+              </a-popconfirm>
+
+              <a-button @click="edit(record)" type="primary">编辑</a-button>
             </a-space>
           </template>
         </template>
@@ -85,11 +93,12 @@
 import { onMounted, onActivated, reactive, ref, useTemplateRef } from 'vue'
 import SearchCard from '@/components/SearchCard.vue'
 import CommonTable from '@/components/CommonTable.vue'
-import { getMenuListApi } from '@/api/system'
+import { getMenuListApi, deleteMenuApi } from '@/api/system'
 import type { Menu, MenuListQuery } from '@/views/System/types'
 import MenuModal from './components/MenuModal.vue'
 import { MenuType } from '@/views/System/enums'
 import dayjs from 'dayjs'
+import { message } from 'ant-design-vue'
 defineOptions({ name: 'system-menu' })
 const columns = [
   { title: '菜单类型', dataIndex: 'type', key: 'type', width: 100 },
@@ -117,6 +126,9 @@ const handleAdd = () => {
   console.log('新增')
   menuModalRef.value?.open()
 }
+const edit = (record: Menu) => {
+  menuModalRef.value?.open(record)
+}
 const pagination = reactive({
   current: 1,
   pageSize: 10,
@@ -136,6 +148,16 @@ async function getMenuList() {
     console.log(error)
   } finally {
     loading.value = false
+  }
+}
+// 删除
+const handleDelete = async (id: string) => {
+  try {
+    await deleteMenuApi(id)
+    message.success('删除成功')
+    getMenuList()
+  } catch (error) {
+    console.log(error)
   }
 }
 // 重置

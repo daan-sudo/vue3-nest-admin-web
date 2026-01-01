@@ -84,7 +84,7 @@
         v-bind="$attrs"
         :columns="displayColumns"
         :data-source="dataSource"
-        :pagination="showPagination ? paginationConfig : false"
+        :pagination="showPagination ? pagination : false"
         :row-selection="rowSelection"
         :loading="loading"
         :indent-size="20"
@@ -103,7 +103,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, onUnmounted, watch } from 'vue'
+import { ref, computed, watch } from 'vue'
 import draggable from 'vuedraggable' // 引入拖拽组件
 import { ReloadOutlined, SettingOutlined, FullscreenOutlined } from '@ant-design/icons-vue'
 import { useElementSize } from '@vueuse/core'
@@ -145,7 +145,7 @@ const props = withDefaults(defineProps<Props>(), {
 const containerRef = ref<HTMLElement | null>(null)
 const { height } = useElementSize(containerRef)
 const dynamicScrollY = ref<number>(300) // 默认保底高度
-const emit = defineEmits(['refresh', 'update:pagination'])
+// const emit = defineEmits(['refresh'])
 
 // --- 列设置逻辑 ---
 const localColumns = ref(props.columns.map((col) => ({ ...col, visible: col.visible ?? true })))
@@ -171,19 +171,19 @@ const toggleAll = (e: any) => {
 const resetColumns = () => {
   localColumns.value = props.columns.map((col) => ({ ...col, visible: true }))
 }
-// --- 分页配置 ---
-const paginationConfig = computed(() => ({
-  total: 0,
-  current: 1,
-  pageSize: 10,
-  showSizeChanger: true,
-  showQuickJumper: true,
-  showTotal: (total: number) => `共 ${total} 条`,
-  ...props.pagination,
-  onChange: (page: number, pageSize: number) => {
-    emit('update:pagination', { ...props.pagination, current: page, pageSize })
-  },
-}))
+// // --- 分页配置 ---
+// const paginationConfig = computed(() => ({
+//   total: 0,
+//   current: 1,
+//   pageSize: 10,
+//   showSizeChanger: true,
+//   showQuickJumper: true,
+//   showTotal: (total: number) => `共 ${total} 条`,
+//   ...props.pagination,
+//   onChange: (page: number, pageSize: number) => {
+//     emit('update:pagination', { ...props.pagination, current: page, pageSize })
+//   },
+// }))
 
 // 全屏切换逻辑（简单示例）
 const toggleFullscreen = (e: MouseEvent) => {
@@ -217,6 +217,7 @@ const handleResize = () => {
 
   // 1. 获取物理空位高度
   const parentHeight = parent.offsetHeight
+  console.log(parentHeight, 'parentHeight')
 
   // 2. 减去表格内部的固定组件高度
   const titleBarHeight = 65 // 标题栏
@@ -233,22 +234,28 @@ const handleResize = () => {
 }
 
 // // 使用 ResizeObserver 监听容器尺寸变化（包括搜索栏折叠导致的尺寸变动）
-let observer: ResizeObserver | null = null
+// let observer: ResizeObserver | null = null
 
-onMounted(() => {
-  observer = new ResizeObserver(() => {
-    // 放在 requestAnimationFrame 中避免“ResizeObserver loop limit exceeded”警告
-    window.requestAnimationFrame(handleResize)
-  })
+// onMounted(() => {
+//   // 必须等待父级渲染完毕
+//   setTimeout(() => {
+//     const parent = containerRef.value?.parentElement
+//     if (parent) {
+//       // 5. 核心修正：监听父元素，而不是监听 containerRef
+//       observer = new ResizeObserver(() => {
+//         window.requestAnimationFrame(handleResize)
+//       })
+//       observer.observe(parent) // <--- 这里必须是 parent
 
-  if (containerRef.value) {
-    observer.observe(containerRef.value)
-  }
-})
+//       // 立即触发一次
+//       handleResize()
+//     }
+//   }, 100)
+// })
 
-onUnmounted(() => {
-  observer?.disconnect()
-})
+// onUnmounted(() => {
+//   observer?.disconnect()
+// })
 </script>
 
 <style scoped>

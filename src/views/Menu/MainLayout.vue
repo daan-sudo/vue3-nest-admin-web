@@ -1,5 +1,5 @@
 <template>
-  <a-layout class="min-h-screen">
+  <a-layout class="h-screen overflow-hidden">
     <a-layout-sider
       v-model:collapsed="collapsed"
       :trigger="null"

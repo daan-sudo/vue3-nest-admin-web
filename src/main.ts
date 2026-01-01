@@ -46,6 +46,7 @@ import {
   Radio,
   InputNumber,
   Tag,
+  Popconfirm,
 } from 'ant-design-vue'
 
 const app = createApp(App)
@@ -79,6 +80,7 @@ app.use(TreeSelect)
 app.use(Radio)
 app.use(InputNumber)
 app.use(Tag)
+app.use(Popconfirm)
 // app.use(LayoutSider)
 // 2. 循环注册所有图标组件
 Object.keys(Icons).forEach((key) => {

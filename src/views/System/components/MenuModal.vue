@@ -70,8 +70,8 @@
 
 <script setup lang="ts">
 import { ref, reactive } from 'vue'
-import type { FormInstance } from 'ant-design-vue'
-import { getMenuListApi, createMenuApi } from '@/api/system'
+import { message, type FormInstance } from 'ant-design-vue'
+import { getMenuListApi, createMenuApi, updateMenuApi } from '@/api/system'
 import type { Menu } from '@/views/System/types'
 
 const emit = defineEmits(['success'])
@@ -103,6 +103,7 @@ const rules = {
 
 // 开启弹窗方法 (暴露给父组件)
 const open = (record?: any) => {
+  console.log('record:', record)
   visible.value = true
   if (record) {
     // 编辑逻辑：填充数据
@@ -112,16 +113,27 @@ const open = (record?: any) => {
     Object.assign(formState, initialFormState)
   }
 }
-
+// /更新
+const handleUpdate = async () => {
+  const res = await updateMenuApi(formState)
+  return res
+}
+// 添加
+const handleAdd = async () => {
+  const res = await createMenuApi(formState)
+  return res
+}
 const handleOk = async () => {
   try {
     await formRef.value?.validate()
     confirmLoading.value = true
-
-    // 这里调用接口：await addMenu(formState)
     console.log('提交数据:', formState)
-    const res = await createMenuApi(formState)
-    console.log(res)
+    if (formState.id) {
+      await handleUpdate()
+    } else {
+      await handleAdd()
+    }
+    message.success('操作成功')
     emit('success')
     visible.value = false
   } catch (error) {
@@ -136,7 +148,13 @@ const handleCancel = () => {
 }
 async function getTreeData() {
   const res = await getMenuListApi()
-  treeData.value = res
+  treeData.value = [
+    {
+      id: 0,
+      name: '根节点(0)',
+    },
+    ...res,
+  ]
 }
 getTreeData()
 defineExpose({ open })
