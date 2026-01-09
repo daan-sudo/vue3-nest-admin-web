@@ -14,9 +14,16 @@ export interface UserInfo {
   email: string
   phone: string
   role: any
-  access_token: string
-  refresh_token: string
+
   id: string
   deptId: string
   department: any
+  remark: string
+  createTime: Date
+  nickName: string
+  sex: number
+}
+export interface Token {
+  access_token: string
+  refresh_token: string
 }

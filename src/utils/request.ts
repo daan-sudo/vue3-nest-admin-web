@@ -15,10 +15,9 @@ class RequestHandler {
   })
 
   static init() {
-    const userStore = useUserStore()
-
     // 请求拦截器
     this.service.interceptors.request.use((config: InternalAxiosRequestConfig) => {
+      const userStore = useUserStore()
       const token = userStore.getAccessToken
       if (token && config.headers) {
         config.headers.Authorization = `Bearer ${token}`

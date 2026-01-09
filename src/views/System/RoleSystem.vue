@@ -45,7 +45,13 @@
         :pagination="pagination"
         @refresh="fetchData"
       >
+        <template #extra>
+          <a-button type="primary" @click="handleAdd">+ 新增角色</a-button>
+        </template>
         <template #bodyCell="{ column, record }">
+          <template v-if="column.dataIndex === 'createTime'">
+            {{ dayjs(record.createTime).format('YYYY-MM-DD HH:mm:ss') }}
+          </template>
           <template v-if="column.dataIndex === 'action'">
             <a-space>
               <a-popconfirm
@@ -63,6 +69,8 @@
         </template>
       </CommonTable>
     </div>
+    <!-- 角色弹窗 -->
+    <RoleModal ref="roleModalRef" @success="getRoleList" />
   </div>
 </template>
 
@@ -70,9 +78,12 @@
 import SearchCard from '@/components/SearchCard.vue'
 import CommonTable from '@/components/CommonTable.vue'
 import type { RoleQuery } from '@/views/System/types'
-import { getRoleListApi } from '@/api/system'
-import { reactive, ref } from 'vue'
+import { getRoleListApi, deleteRoleApi } from '@/api/system'
+import { reactive, ref, useTemplateRef } from 'vue'
 import type { Role } from '@/views/System/types'
+import RoleModal from './components/RoleModal.vue'
+import { message } from 'ant-design-vue'
+import dayjs from 'dayjs'
 const loading = ref(false)
 const dataSource = ref<Role[]>([])
 const columns = ref([
@@ -137,10 +148,27 @@ const getRoleList = async () => {
   }
 }
 getRoleList()
+const roleModalRef = useTemplateRef('roleModalRef')
+
+// 新增
+const handleAdd = () => {
+  roleModalRef.value?.open()
+}
+
 // 删除
-async function handleDelete(id: string) {}
+async function handleDelete(id: number) {
+  try {
+    await deleteRoleApi(id)
+    message.success('删除成功')
+    getRoleList()
+  } catch (error) {
+    console.error(error)
+  }
+}
 // 编辑
-async function edit(record: any) {}
+async function edit(record: any) {
+  roleModalRef.value?.open(record)
+}
 </script>
 
 <style scoped lang="scss"></style>

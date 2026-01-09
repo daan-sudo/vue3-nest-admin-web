@@ -84,15 +84,12 @@
 </template>
 
 <script setup lang="ts">
-import { reactive, ref, onMounted } from 'vue'
+import { reactive, ref } from 'vue'
 import {
   SearchOutlined,
   PlusOutlined,
   ReloadOutlined,
   SettingOutlined,
-  MonitorOutlined,
-  EditOutlined,
-  AppstoreOutlined,
 } from '@ant-design/icons-vue'
 import type { TableProps, ColumnType } from 'ant-design-vue/es/table'
 

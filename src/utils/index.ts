@@ -16,3 +16,9 @@ export const timeFix = () => {
   }
   return result
 }
+// 编写一个简单的转换函数
+export const getProxyUrl = (url: string | undefined) => {
+  if (!url) return ''
+  // 如果是 OSS 域名，将其替换为本地代理前缀
+  return url.replace('http://daan-pqf.oss-cn-beijing.aliyuncs.com', '/oss-resource')
+}

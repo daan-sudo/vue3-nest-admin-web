@@ -40,6 +40,18 @@ const router = createRouter({
           component: () => import('@/views/Menu/Home.vue'),
         },
         {
+          path: '/test',
+          name: 'test',
+          meta: { title: '首页', keepAlive: true }, // 必须有 title
+          component: () => import('@/views/Test/Test.vue'),
+        },
+        {
+          path: '/center',
+          name: 'center',
+          meta: { title: '个人中心', keepAlive: true }, // 必须有 title
+          component: () => import('@/views/PersonalCenter/PersonalCenter.vue'),
+        },
+        {
           path: '/system/user',
           name: 'system-user',
           meta: { title: '用户管理', keepAlive: true }, // 必须有 title

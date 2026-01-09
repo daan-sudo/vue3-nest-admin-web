@@ -20,6 +20,14 @@ export default defineConfig({
         changeOrigin: true,
         rewrite: (path) => path.replace(/^\/api/, ''), // 去掉路径中的 /api
       },
+      // ✅ 新增：专门给 OSS 图片用的代理
+      '/oss-resource': {
+        target: 'http://daan-pqf.oss-cn-beijing.aliyuncs.com',
+        changeOrigin: true,
+        // 关键：去掉前缀，这样 /oss-resource/avatars/1.png
+        // 就会变成 http://daan-pqf.oss-cn-beijing.aliyuncs.com/avatars/1.png
+        rewrite: (path) => path.replace(/^\/oss-resource/, ''),
+      },
     },
   },
 })

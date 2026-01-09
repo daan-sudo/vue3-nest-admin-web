@@ -80,8 +80,8 @@
           <!-- <a-badge :count="6"><notification-outlined class="text-lg" /></a-badge> -->
           <a-dropdown>
             <div class="flex items-center gap-2 cursor-pointer">
-              <a-avatar src="https://api.dicebear.com/7.x/avataaars/svg?seed=Felix" />
-              <span class="font-medium text-primary-text">清风大管家</span>
+              <a-avatar :src="userInfo?.avatar" />
+              <span class="font-medium text-primary-text">{{ userInfo?.username }}</span>
             </div>
             <template #overlay>
               <a-menu>
@@ -146,7 +146,8 @@ import { useUserStore } from '@/stores/user'
 import { ExclamationCircleOutlined } from '@ant-design/icons-vue'
 import { createVNode } from 'vue'
 import { Modal } from 'ant-design-vue'
-import { getMenuListApi } from '@/api/system'
+import { getUserMenuApi } from '@/api/system'
+import { storeToRefs } from 'pinia'
 
 import {
   MenuUnfoldOutlined,
@@ -158,6 +159,8 @@ import { useFullscreen } from '@vueuse/core'
 import type { Menu } from '../System/types'
 const { isFullscreen, toggle } = useFullscreen()
 const userStore = useUserStore()
+const { getInfoApi } = userStore
+const { userInfo } = storeToRefs(userStore)
 const isContentMax = ref(false)
 const collapsed = ref(false)
 const route = useRoute()
@@ -170,19 +173,6 @@ const activeTabPath = ref(route.path)
 const isSpin = ref(false)
 
 const menuData = ref<Menu[]>([])
-// 模拟菜单数据
-// const menuData = [
-//   { title: '首页', path: '/home', icon: 'MonitorOutlined' },
-//   {
-//     title: '系统管理',
-//     path: '/system',
-//     icon: 'SettingOutlined',
-//     children: [
-//       { title: '用户管理', path: '/system/user' },
-//       { title: '菜单管理', path: '/system/menu' },
-//     ],
-//   },
-// ]
 
 // 监听路由变化：添加 Tab, 更新面包屑
 watch(
@@ -254,11 +244,16 @@ const logout = () => {
 }
 // 获取菜单
 async function getMenuList() {
-  const res = await getMenuListApi()
+  const res = await getUserMenuApi(userInfo.value!.id)
   console.log(res)
   menuData.value = res
 }
-getMenuList()
+
+async function init() {
+  await getInfoApi()
+  getMenuList()
+}
+init()
 onMounted(() => window.addEventListener('keydown', handleEsc))
 onUnmounted(() => window.removeEventListener('keydown', handleEsc))
 </script>

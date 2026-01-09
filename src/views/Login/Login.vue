@@ -112,7 +112,7 @@ const handleLogin = async () => {
     const res = await loginApi(loginForm)
     message.success('登录成功')
     console.log(res, 'res')
-    userStore.setAuth(res)
+    userStore.setTokens(res.access_token, res.refresh_token)
     router.push('/home')
   } catch (error) {
     console.log(error)
