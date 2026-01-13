@@ -1,6 +1,6 @@
 <template>
   <div class="p-6 space-y-6 min-h-screen">
-    <div class="p-6 rounded-lg shadow-sm flex items-center justify-between">
+    <div class="p-6 rounded-lg shadow-sm flex items-center justify-between bg-app-bg">
       <div class="flex items-center space-x-4">
         <a-avatar :size="64" :src="userInfo?.avatar">
           <template #icon><UserOutlined /></template>

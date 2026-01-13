@@ -16,7 +16,9 @@ export default defineConfig({
   server: {
     proxy: {
       '/api': {
-        target: 'http://localhost:3000', // 你的 NestJS 地址
+        // target: 'http://localhost:3000', // 你的 NestJS 地址
+        // target: 'http://192.168.1.16:3006', // 你的 NestJS 地址
+        target: 'http://80800.iepose.cn', // 你的 NestJS 地址
         changeOrigin: true,
         rewrite: (path) => path.replace(/^\/api/, ''), // 去掉路径中的 /api
       },
