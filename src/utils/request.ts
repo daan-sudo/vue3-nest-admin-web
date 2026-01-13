@@ -70,12 +70,13 @@ class RequestHandler {
     try {
       const rt = userStore.getRefreshToken
       // 调用原生 axios 避免进入死循环
-      const { data: res } = await axios.post(`${config.baseURL}/auth/refresh`, { refreshToken: rt })
-      const { accessToken, refreshToken } = res.data
+      const { data: res } = await axios.post(`${config.baseURL}/user/refresh`, { refreshToken: rt })
+      console.log(res, 'res')
+      const { access_token, refresh_token } = res.data
 
-      userStore.setTokens(accessToken, refreshToken)
+      userStore.setTokens(access_token, refresh_token)
 
-      this.requests.forEach((cb) => cb(accessToken))
+      this.requests.forEach((cb) => cb(access_token))
       this.requests = []
       return this.service(config)
     } catch (err) {
