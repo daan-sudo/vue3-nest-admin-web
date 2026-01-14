@@ -18,7 +18,7 @@ FROM nginx:alpine
 # 从第一阶段拷贝打包好的 dist 目录到 Nginx 目录
 # 注意：Vue/Vite 默认打包目录是 dist，如果是 React 可能是 build
 COPY --from=build-stage /app/dist /usr/share/nginx/html
-
+COPY nginx.conf /etc/nginx/conf.d/default.conf
 # 暴露 80 端口
 EXPOSE 80
 
