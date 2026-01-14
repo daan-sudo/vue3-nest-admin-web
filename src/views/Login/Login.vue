@@ -19,7 +19,7 @@
           class="text-[28px] font-bold mb-2 transition-colors"
           :style="{ color: 'var(--text-color)' }"
         >
-          清风后台管理系统
+          清风后台管理系统测试
         </h2>
         <p class="text-sm text-gray-500 dark:text-gray-400">欢迎回来，请登录您的账号</p>
       </div>
